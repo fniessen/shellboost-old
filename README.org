@@ -216,9 +216,9 @@ fi
 Note ~\[...\]~ used by the shell to count proper length.
 
 #+begin_src shell :tangle no
-if tput setaf 1 &> /dev/null; then
+if tput setaf 1 > /dev/null 2>&1; then
     tput sgr0
-    if tput colors &> /dev/null; then
+    if tput colors > /dev/null 2>&1; then
         if [[ $(tput colors) -ge 256 ]]; then
             MAG=$(tput setaf 9)
             ORANGE=$(tput setaf 172)
@@ -1468,7 +1468,7 @@ z4h-redraw-prompt() {
     emulate -L zsh
     local f
     for f in chpwd $chpwd_functions precmd $precmd_functions; do
-        (( $+functions[$f] )) && $f &>/dev/null
+        (( $+functions[$f] )) && $f > /dev/null 2>&1
     done
     zle .reset-prompt
     zle -R
@@ -1632,7 +1632,7 @@ zapply() {
 
 # gman - format manpage using GNU troff
 gman() {
-  ( man -w "$@" 2>/dev/null || printf '%s\n' "$@" ) |
+  ( man -w "$@" 2> /dev/null || printf '%s\n' "$@" ) |
     xargs cat |
     groff -t -p -I/usr/share/man -Tutf8 -mandoc | less
 }
@@ -1906,23 +1906,23 @@ export LESSBINFMT="*d?"                 # Use bold ?.
 
 Commands for *searching*:
 
-- ~/pattern~ :: Search forward for matching line.
-- ~?pattern~ :: Search backward for matching line.
-- ~n~ :: Repeat previous search.
-- ~N~ :: Repeat previous search in reverse direction.
-- ~ESC-u~ :: Undo (toggle) search highlighting.
-- ~&pattern~ :: Display only matching lines. \\
-     If pattern is empty (if you type ~&~ immediately followed by ~RET~), any
-     filtering is turned off, and all lines are displayed.
+- ~/pattern~ :: Search forward for the next line matching the pattern.
+- ~?pattern~ :: Search backward for the previous line matching the pattern.
+- ~n~ :: Repeat the previous search forward.
+- ~N~ :: Repeat the previous search in reverse direction.
+- ~ESC-u~ :: Undo (toggle) search highlighting on or off.
+- ~&pattern~ :: Display only lines matching the pattern. \\
+     If the pattern is empty (i.e., typing ~&~ followed immediately by ~RET~),
+     filtering is disabled, and all lines are displayed again.
 
 Commands for *jumping*:
 
-- g :: Jump to start (go to *first line* in file).
-- G :: Jump to end (go to *last line* in file).
+- ~g~ :: Jump to the start (go to the *first line* in the file).
+- ~G~ :: Jump to the end (go to the *last line* in the file).
 
 Miscellaneous commands:
 
-- -S :: Toggle chop (*truncate*) *long lines* rather than wrapping.
+- ~-S~ :: Toggle chopping (*truncating*) of *long lines* instead of wrapping them.
 
 Options:
 
@@ -2200,6 +2200,7 @@ Sort in descending order of disk usage.
 
 #+begin_src shell
 alias dusort='du -ms * | sort -rn'
+alias dusorted='du -s ./* | sort -n | cut -f 2- | xargs -i du -sh {}'
 #+end_src
 
 Summarize the disk usage of all directories in the current directory, ordered by size.
@@ -2438,23 +2439,6 @@ alias cleanup="find . -type f -name '*.DS_Store' -ls -delete"
 
 # Empty the Trash on all mounted volumes and the main HDD
 alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes; sudo rm -rfv ~/.Trash"
-#+end_src
-
-*** Org
-
-#+begin_src shell :tangle no
-# Run org-mode tests using Emacs batch mode.
-function org_test {
-    local tmpdir="/tmp/tmp-orgtest"
-    (
-        cd "$HOME"/Public/Repositories/org-mode" \
-            || { echo "Error: Could not change directory to $HOME/Public/Repositories/org-mode"; return 1; }
-        mkdir "$tmpdir" 2> /dev/null \
-            || { echo "Error: Could not create temporary directory"; return 1; } # TMPDIR must exist!
-        TMPDIR="$tmpdir" \
-            emacs -Q --batch -L lisp/ -L testing/ -l org-test.el --eval '(setq org-confirm-babel-evaluate nil)' -f org-test-run-batch-tests || { echo "Error: Failed to run org-mode tests"; return 1; }
-    )
-}
 #+end_src
 
 *** Grep
