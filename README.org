@@ -9,6 +9,16 @@
 #+PROPERTY:  header-args :eval no
 #+SETUPFILE: ~/org/theme-readtheorg.setup
 
+#+begin_quote
+[!TIP]
+
+*** Master the command line in Paris on 26 November 2025!
+Unlock the full power of your system with the exclusive "ShellBoost" course.
+
+Visit https://shellboost.fr/ for details and registration,
+and to /secure your place today/.
+#+end_quote
+
 * Important notice: repository obsolescence
 
 The ~shellboost~ repository is now obsolete. For the latest updates, features,
