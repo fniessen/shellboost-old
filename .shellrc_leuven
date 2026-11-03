@@ -1,7 +1,7 @@
 # Hey Emacs, this is a -*- sh -*- file
 ## .shellrc --- Shell agnostic configuration file
 
-# Copyright (C) 2009-2025 Fabrice Niessen
+# Copyright (C) 2009-2026 Fabrice Niessen
 
 # Author: Fabrice Niessen <(concat "fniessen" at-sign "pirilampo.org")>
 # Keywords: bash, zsh, dotfile, config
@@ -15,13 +15,13 @@ uname -s -n -r -m
 function die() {
     local message="${1:-Unknown error}"
     logger "$message"
-    printf >&2 '%s: Fatal error: %s\n' "$(basename "$0")" "$message"
+    printf '%s: Fatal error: %s\n' "$(basename "$0")" "$message" >&2
     exit 2
 }
 
 command_exists() {
-    if ! command -v "$1" > /dev/null 2>&1; then
-        printf >&2 "Error: '%s' command not found.\n" "$1"
+    if ! command -v "$1" >/dev/null 2>&1; then
+        printf "Error: '%s' command not found.\n" "$1" >&2
         return 2
     fi
 }
@@ -337,7 +337,7 @@ texlist() {
 # Commandline Fu
 cmdfu() {
     curl "http://www.commandlinefu.com/commands/matching/$(echo "$@" \
-        | sed 's/ /-/g')/$(echo -n $@ | base64)/plaintext" ;
+        | sed 's_ _-_g')/$(echo -n $@ | base64)/plaintext" ;
 }
 
 # Check if websites are down

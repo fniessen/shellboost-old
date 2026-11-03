@@ -225,7 +225,7 @@ setopt auto_pushd
 setopt pushd_ignore_dups
 
 cd() {
-    builtin cd "$@" > /dev/null
+    builtin cd "$@" >/dev/null
     ls --color=auto -F
 }
 
@@ -340,7 +340,7 @@ z4h-redraw-prompt() {
     emulate -L zsh
     local f
     for f in chpwd $chpwd_functions precmd $precmd_functions; do
-        (( $+functions[$f] )) && $f > /dev/null 2>&1
+        (( $+functions[$f] )) && $f >/dev/null 2>&1
     done
     zle .reset-prompt
     zle -R

@@ -1,3 +1,4 @@
+# Hey Emacs, this is a -*- org -*- file ...
 #+TITLE:     Config file for GNU Screen
 #+AUTHOR:    Fabrice Niessen
 #+EMAIL:     (concat "fniessen" at-sign "pirilampo.org")
@@ -5,7 +6,7 @@
 #+KEYWORDS:
 #+LANGUAGE:  en
 
-#+SETUPFILE: ~/org/theme-readtheorg.setup
+#+SETUPFILE: ~/org/setup/html-theme-readtheorg.setup
 
 * Tasks
 

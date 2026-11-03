@@ -22,7 +22,7 @@
 # Get the current Git branch.
 git_branch() {
     local branch
-    branch=$(git branch 2> /dev/null | sed -n '/^*/s/^* //p')
+    branch=$(git branch 2>/dev/null | sed -n '/^*/s/^* //p')
     if [[ -n "$branch" ]]; then
         printf " (%s)" "$branch"
     fi
@@ -89,7 +89,7 @@ complete -A hostname ssh telnet nmap ftp ping host traceroute nslookup
 # When entering a directory, push it to the directory stack and list its
 # contents.
 cd() {
-    builtin pushd "$@" > /dev/null      # = setopt auto_pushd, in Zsh.
+    builtin pushd "$@" >/dev/null      # = setopt auto_pushd, in Zsh.
     dirs_remove_dups                    # = setopt pushd_ignore_dups, in Zsh.
     ls --color=auto -F
 }
@@ -108,7 +108,7 @@ dirs_remove_dups() {
     done
     dirs -c
     for ((i=${#new[@]}-1; i>=0; i--)); do
-        builtin pushd -n "${new[i]}" > /dev/null
+        builtin pushd -n "${new[i]}" >/dev/null
     done
 }
 

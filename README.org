@@ -7,7 +7,7 @@
 #+OPTIONS:   num:nil ^:{}
 
 #+PROPERTY:  header-args :eval no
-#+SETUPFILE: ~/org/theme-readtheorg.setup
+#+SETUPFILE: ~/org/setup/html-theme-readtheorg.setup
 
 #+begin_quote
 [!TIP]
@@ -226,9 +226,9 @@ fi
 Note ~\[...\]~ used by the shell to count proper length.
 
 #+begin_src shell :tangle no
-if tput setaf 1 > /dev/null 2>&1; then
+if tput setaf 1 >/dev/null 2>&1; then
     tput sgr0
-    if tput colors > /dev/null 2>&1; then
+    if tput colors >/dev/null 2>&1; then
         if [[ $(tput colors) -ge 256 ]]; then
             MAG=$(tput setaf 9)
             ORANGE=$(tput setaf 172)
@@ -265,7 +265,7 @@ See [[http://ezprompt.net/][Easy Bash PS1 Generator]]
 # Get the current Git branch.
 git_branch() {
     local branch
-    branch=$(git branch 2> /dev/null | sed -n '/^*/s/^* //p')
+    branch=$(git branch 2>/dev/null | sed -n '/^*/s/^* //p')
     if [[ -n "$branch" ]]; then
         printf " (%s)" "$branch"
     fi
@@ -385,7 +385,7 @@ complete -A hostname ssh telnet nmap ftp ping host traceroute nslookup
 # When entering a directory, push it to the directory stack and list its
 # contents.
 cd() {
-    builtin pushd "$@" > /dev/null      # = setopt auto_pushd, in Zsh.
+    builtin pushd "$@" >/dev/null      # = setopt auto_pushd, in Zsh.
     dirs_remove_dups                    # = setopt pushd_ignore_dups, in Zsh.
     ls --color=auto -F
 }
@@ -404,7 +404,7 @@ dirs_remove_dups() {
     done
     dirs -c
     for ((i=${#new[@]}-1; i>=0; i--)); do
-        builtin pushd -n "${new[i]}" > /dev/null
+        builtin pushd -n "${new[i]}" >/dev/null
     done
 }
 #+end_src
@@ -744,27 +744,6 @@ fi
 #+end_src
 
 ** Colors
-
-*** Stderr in red
-
-Wrap text that goes to file with descriptor ~2~ with proper ANSI escape codes,
-making text red.
-
-#+begin_src shell
-# Color stderr.
-zmodload zsh/system
-color_stderr_red() {
-    # Sysread & syswrite are part of `zsh/system'.
-    emulate -LR zsh
-    local stderr_red_esc_code=$'\e[37;1;41m'
-    while sysread; do
-        syswrite -o 2 "${stderr_red_esc_code}${REPLY}$terminfo[sgr0]"
-    done
-}
-
-# Redirect stderr to color_stderr_red function.
-exec 2> >(color_stderr_red)
-#+end_src
 
 ** Prompt
 
@@ -1187,7 +1166,7 @@ setopt auto_pushd
 setopt pushd_ignore_dups
 
 cd() {
-    builtin cd "$@" > /dev/null
+    builtin cd "$@" >/dev/null
     ls --color=auto -F
 }
 #+end_src
@@ -1478,7 +1457,7 @@ z4h-redraw-prompt() {
     emulate -L zsh
     local f
     for f in chpwd $chpwd_functions precmd $precmd_functions; do
-        (( $+functions[$f] )) && $f > /dev/null 2>&1
+        (( $+functions[$f] )) && $f >/dev/null 2>&1
     done
     zle .reset-prompt
     zle -R
@@ -1535,7 +1514,7 @@ The exit status follows the conventions for programs such as ~grep~, ~cmp~, and
 function die() {
     local message="${1:-Unknown error}"
     logger "$message"
-    printf >&2 '%s: Fatal error: %s\n' "$(basename "$0")" "$message"
+    printf '%s: Fatal error: %s\n' "$(basename "$0")" "$message" >&2
     exit 2
 }
 #+end_src
@@ -1553,15 +1532,15 @@ To find out if a given command exists (in the user's PATH), don't use ~which~
 complains when nothing is found instead of being silent):
 
 #+begin_src shell :tangle no
-if $(which ag > /dev/null 2>&1); then alias grep='ag'; fi
+if $(which ag >/dev/null 2>&1); then alias grep='ag'; fi
 #+end_src
 
 Instead use:
 
 #+begin_src shell
 command_exists() {
-    if ! command -v "$1" > /dev/null 2>&1; then
-        printf >&2 "Error: '%s' command not found.\n" "$1"
+    if ! command -v "$1" >/dev/null 2>&1; then
+        printf "Error: '%s' command not found.\n" "$1" >&2
         return 2
     fi
 }
@@ -1642,7 +1621,7 @@ zapply() {
 
 # gman - format manpage using GNU troff
 gman() {
-  ( man -w "$@" 2> /dev/null || printf '%s\n' "$@" ) |
+  ( man -w "$@" 2>/dev/null || printf '%s\n' "$@" ) |
     xargs cat |
     groff -t -p -I/usr/share/man -Tutf8 -mandoc | less
 }
@@ -2090,19 +2069,6 @@ Double quotes are evaluated at time of creation and, thereafter, never changes:
 : alias qd="echo $PWD"
 #+end_note
 
-*** History
-
-Print the history lines matching a pattern.
-
-#+begin_src shell
-alias hgrep='history | grep -i'
-#+end_src
-
-#+begin_tip
-We can't call this alias ~hg~ as that conflicts with the Mercurial prompt of the
-Agnoster theme (checking for the presence of the ~hg~ command).
-#+end_tip
-
 *** Common aliases
 
 #+begin_src shell
@@ -2247,15 +2213,12 @@ Interesting alias in Oh My Zsh: ~x~ / ~extract~ to extract an archive of types
 tar.{bz2,gz,xz,lzma}, bz2, rar, gz, tbz2, tgz, zip, Z, 7z.
 
 #+begin_src shell
-# Display the contents of $PATH with each directory separated by a newline character.
-alias path='echo "$PATH" | tr ":" "\n"'
-
 # Display information about a command, function, or shell built-in.
 alias where='type -a'
 #+end_src
 
 #+begin_src shell
-# Enable aliases to be sudo’ed.
+# Enable aliases to be sudo'ed.
 alias sudo='sudo '
 
 # Become root.
@@ -2394,7 +2357,7 @@ alias dk='docker'
 alias dkc='docker-compose'
 alias dkm='docker-machine'
 
-alias dk-ips="docker ps -q | xargs -n 1 docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}} {{ .Name }}' | sed 's/ \//\t/'"
+alias dk-ips="docker ps -q | xargs -n 1 docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}} {{ .Name }}' | sed 's_ \/_\t_'"
 alias dk-clean='docker-clean'
 
 
@@ -2672,7 +2635,7 @@ texlist() {
 # Commandline Fu
 cmdfu() {
     curl "http://www.commandlinefu.com/commands/matching/$(echo "$@" \
-        | sed 's/ /-/g')/$(echo -n $@ | base64)/plaintext" ;
+        | sed 's_ _-_g')/$(echo -n $@ | base64)/plaintext" ;
 }
 
 # Check if websites are down
@@ -2688,15 +2651,15 @@ say() {
    find ~/Downloads/en -name "$1.ogg" -exec ogg123 {} \;
    # mplayer -user-agent Mozilla -prefer-ipv4 \
    # "http://translate.google.md/translate_tts?ie=UTF-8&tl="$1"&q=$(echo "$@" \
-   # | cut -d ' ' -f2- | sed 's/ /\+/g')" > /dev/null 2>&1 ;
+   # | cut -d ' ' -f2- | sed 's_ _\+_g')" >/dev/null 2>&1 ;
 }
 
 say-translation() {
    lang=$1
-   trans=$(translate {=$lang} "$(echo "$@" | cut -d ' ' -f2- | sed 's/ /\+/g')" )
+   trans=$(translate {=$lang} "$(echo "$@" | cut -d ' ' -f2- | sed 's_ _\+_g')" )
    echo $trans
    mplayer -user-agent Mozilla \
-   "http://translate.google.com/translate_tts?ie=UTF-8&tl=$lang&q=$trans" > /dev/null 2>&1 ;
+   "http://translate.google.com/translate_tts?ie=UTF-8&tl=$lang&q=$trans" >/dev/null 2>&1 ;
 }
 #+end_src
 
